@@ -21,24 +21,41 @@ void* sharedMemPtr;
  * @param msqid - the id of the shared memory
  */
 
+// bucket
 void init(int& shmid, int& msqid, void*& sharedMemPtr)
 {
 	/* TODO: 
-        1. Create a file called keyfile.txt containing string "Hello world" (you may do
+        x1. Create a file called keyfile.txt containing string "Hello world" (you may do
  		    so manually or from the code).
-	    2. Use ftok("keyfile.txt", 'a') in order to generate the key.
+	    x2. Use ftok("keyfile.txt", 'a') in order to generate the key.
 		3. Use the key in the TODO's below. Use the same key for the queue
 		    and the shared memory segment. This also serves to illustrate the difference
 		    between the key and the id used in message queues and shared memory. The id
-		    for any System V objest (i.e. message queues, shared memory, and sempahores) 
+		    for any System V object (i.e. message queues, shared memory, and semaphores) 
 		    is unique system-wide among all SYstem V objects. Two objects, on the other hand,
 		    may have the same key.
 	 */
-	key = ftock("keyfile.txt", 'a')'
-
+	
+	// ftok to generate unique key
+	key = ftok("keyfile.txt", 'a');
+	
+	// shmget returns an identifier in shmid
+	/* in ex.
+	 * shm_id = shmget(
+     *         key_t     k,        the key for the segment
+	 * 		   int       size,     the size of the segment
+     * 		   int       flag);    create/use flag
+	*/
+	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, ?FLAG?)
+	
+	// shmat to attach to shared memory
+	// in ex. char *str = (char*) shmat(shmid,(void*)0,0); 
+	sharedMemPtr = (char*) shmat(shmid, NULL, 0);
+	
+	//detach from shared memory
+	shmdt(sharedMemPtr);
 	
 	/* TODO: Get the id of the shared memory segment. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE */
-		int shmget(key_t key, size_t size, int shmflg); 
 	/* TODO: Attach to the shared memory */
 	/* TODO: Attach to the message queue */
 	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
