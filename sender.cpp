@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <ofstream>
+#include <fstream>
 #include <iostream>
 
 #include "msg.h"    /* For the message struct */
@@ -26,7 +26,7 @@ void* sharedMemPtr;
  * @param msqid - the id of the shared memory
  */
 
-void init(int& shmid, int& msqid, void*& sharedMemPtr, int argc, char ** argv)
+void init(int& shmid, int& msqid, void*& sharedMemPtr)
 {
 
 	/* TODO: 
@@ -152,7 +152,7 @@ void send(const char* fileName)
  		 * (message of type SENDER_DATA_TYPE) 
  		 */
 		//msgsnd() Data is placed on to a message queue by calling msgsnd()
-		if(msgsnd(msqid, &sndMsg, sizeof(struct message) - sizof(long), 0) == -1) {
+		if(msgsnd(msqid, &sndMsg, sizeof(struct message) - sizeof(long), 0) == -1) {
 			perror("msgsnd: Failed msgsnd");
 			//exit(-1);
 		}
@@ -163,7 +163,8 @@ void send(const char* fileName)
  		 //Retrieve message from queue
  		 if(msgrcv(msqid, &rcvMsg, sizeof(struct message) - sizeof(long), RECV_DONE_TYPE, 0) == -1) {
  		 perror("msgrcv: mvsgrcv error");
- 		 exite(1);
+ 		 exit(1);
+		}
 	}
 	
 
