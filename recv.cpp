@@ -41,7 +41,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 	         key_t key = ftok("keyfile.txt", 'a');
 	         //keyfile.txt created and saved into same directory
 	         //2. ftock(Points to path upon which part of the key is formed, character upon which part of key is formed)
-	         key_t key = ftok(sharedMemPtr, shmid);
+	        
 	         /*
 	         
 	         /*
@@ -67,7 +67,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 	// will use the form: int shmget ( key_t key, int size, int shflg);
 	
 	
-	if((msgid = msgget(key, 0644 | IPC_CREAT)) == -1) {
+	if((msqid = msgget(key, 0644 | IPC_CREAT)) == -1) {
 		perror("msgget: Error with msgget receiver code");
 		exit(1);
 	}
@@ -94,7 +94,7 @@ void mainLoop()
 	/* The size of the mesage */
 	int msgSize = 0;
 	
-	message = myMessage;
+	message myMessage;
 	
 	/* Open the file for writing */
 	FILE* fp = fopen(recvFileName, "w");
@@ -121,13 +121,13 @@ void mainLoop()
  	 * there is no more data to send
  	 */
  	 
- 	 if(msgrcv(msqied, &myMessage, sizeof(struct message) - sizeof(long), SENDER_DATA_TYPE, 0) == -1) {
+ 	 if(msgrcv(msqid, &myMessage, sizeof(struct message) - sizeof(long), SENDER_DATA_TYPE, 0) == -1) {
  	 perror("msgrcv: Msgrcv error in receiver code");
  	 fclose(fp);
  	 exit(1);
  	 }
  	 	
-	msgSize = myMessage.size();
+	msgSize = myMessage.size;
 	
 	while(msgSize != 0)
 	{	
@@ -150,9 +150,9 @@ void mainLoop()
 			//get the next message
 			if(msgrcv(msqid, &myMessage, sizeof(struct message)  - sizeof(long), SENDER_DATA_TYPE, 0) == -1) {
 			perror("msgrcv: Error with msgrcv in receiver code");
-			exitt(1);
+			exit(1);
 			}
-			msgSize = myMessage.size();
+			msgSize = myMessage.size;
 		}
 		/* We are done */
 		else
@@ -202,7 +202,7 @@ int main(int argc, char** argv)
  	 * queues and shared memory before exiting. You may add the cleaning functionality
  	 * in ctrlCSignal().
  	 */
-	signal(SIGINT, cntrlCSignal);
+	//cntrlCSignal(SIGINT);
 	/* Initialize */
 	init(shmid, msqid, sharedMemPtr);
 	
