@@ -10,10 +10,13 @@
 #include <stdio.h>/* to use ftock()*/
 #include <sys/ipc.h>
 #include <iostream>
-using namespace std;
+#include <fstream>
+
 
 /* The size of the shared memory chunk */
 #define SHARED_MEMORY_CHUNK_SIZE 1000
+
+using namespace std;
 
 /* The ids for the shared memory segment and the message queue */
 int shmid, msqid;
@@ -38,11 +41,10 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 	/* TODO: 1. Create a file called keyfile.txt containing string "Hello world" (you may do
  		    so manually or from the code).
 	         2. Use ftok("keyfile.txt", 'a') in order to generate the key. */
-	         key_t key = ftok("keyfile.txt", 'a');
 	         //keyfile.txt created and saved into same directory
 	         //2. ftock(Points to path upon which part of the key is formed, character upon which part of key is formed)
 	        
-	         /*
+	         key_t key = ftok("/home/maria/Desktop/CPSC351/project1/keyfile.txt", 'a');
 	         
 	         /*
 		 3. Use the key in the TODO's below. Use the same key for the queue
@@ -69,8 +71,9 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 	
 	if((msqid = msgget(key, 0644 | IPC_CREAT)) == -1) {
 		perror("msgget: Error with msgget receiver code");
-		exit(1);
+		exit(1);//exit non 0 status
 	}
+	
 	/* TODO: Attach to the shared memory */
 	//I tried to attach it be assigning shmid to the the newly allocated piece of shared memory
 	//for shflg I choce IPC_CREAT
@@ -80,15 +83,13 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 		perror("shmat: Error with Shmat in receiver code");
 		exit(1);
 	}
-	
-	
-	
 }
  
 
 /**
  * The main loop
  */
+ 
 void mainLoop()
 {
 	/* The size of the mesage */
@@ -126,6 +127,13 @@ void mainLoop()
  	 fclose(fp);
  	 exit(1);
  	 }
+ 	 
+ 	 //____DELETE BEFORE SUBMISSION____
+ 	 
+ 	 printf("MsgSize\n");
+ 	 myMessage.printer();
+ 	 
+ 	 //____END DELETE BEFORE SUBMISSION
  	 	
 	msgSize = myMessage.size;
 	
@@ -147,11 +155,17 @@ void mainLoop()
 				perror("msqid: Error with msqid in receiver code");
 				exit(1);
 				}
+				
 			//get the next message
 			if(msgrcv(msqid, &myMessage, sizeof(struct message)  - sizeof(long), SENDER_DATA_TYPE, 0) == -1) {
 			perror("msgrcv: Error with msgrcv in receiver code");
 			exit(1);
 			}
+			
+			//___DELETE BEFORE SUBMISSION
+			myMessage.printer();
+			//____END DELETE BEFORE SUBMISSION____
+			
 			msgSize = myMessage.size;
 		}
 		/* We are done */
@@ -202,7 +216,8 @@ int main(int argc, char** argv)
  	 * queues and shared memory before exiting. You may add the cleaning functionality
  	 * in ctrlCSignal().
  	 */
-	//cntrlCSignal(SIGINT);
+ 	 signal(SIGINT, ctrlCSignal);
+	
 	/* Initialize */
 	init(shmid, msqid, sharedMemPtr);
 	
@@ -210,6 +225,6 @@ int main(int argc, char** argv)
 	mainLoop();
 
 	/** TODO: Detach from shared memory segment, and deallocate shared memory and message queue (i.e. call cleanup) **/
-		
+		cleanUp(shmid, msqid, sharedMemPtr);
 	return 0;
 }
