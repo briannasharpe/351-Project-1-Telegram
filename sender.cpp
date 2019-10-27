@@ -9,6 +9,12 @@
 
 #include "msg.h"    /* For the message struct */
 
+//_____DELETE BEFORE SUBMISSION
+#define MESSAGE_COUNT_FOR_TESTING 1000
+
+//_____END DELETE BEFORE SUBMISSION
+
+
 /* The size of the shared memory chunk */
 #define SHARED_MEMORY_CHUNK_SIZE 1000
 
@@ -32,23 +38,10 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 	/* TODO: 
         1. Create a file called keyfile.txt containing string "Hello world" (you may do
  		    so manually or from the code).*/
- 		    
- 	/*ofstream myFile;
- 	string fileName = argv[1];
- 	fout.open(fileName);
  	
- 	if(!myFile.good()) {
- 		perror("(ofstream) failed!");
- 		exit(1);//exit status 1 for error
- 	}
- 	for(int i = 0; i < SHARED_MEMORY_CHUNK; i++) {
- 		myFile << i << "Hello World!\n";
- 	}
- 	
- 	myFile.close();*/
  	
 //   2. Use ftok("keyfile.txt", 'a') in order to generate the key.
-	key_t key = ftok("keyfile.txt", 'a');
+	key_t key = ftok("/home/maria/Desktop/CPSC351/project1/keyfile.txt", 'a');
 	
 	
 /*3. Use the key in the TODO's below. Use the same key for the queue
@@ -103,7 +96,6 @@ void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 		exit(1);
 	}
 	
-	
 }
 
 /**
@@ -118,6 +110,10 @@ void send(const char* fileName)
 
 	/* A buffer to store message we will send to the receiver. */
 	message sndMsg; 
+	
+	//DELETE BEFORE SUBMISSION
+	sndMsg.mtype = SENDER_DATA_TYPE;
+	//END DELETE BEFORE SUBMISSION
 	
 	/* A buffer to store message received from the receiver. */
 	message rcvMsg;
