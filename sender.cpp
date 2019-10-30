@@ -48,12 +48,13 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 	// ====================================================================================================
 	/* TODO: Get the id of the shared memory segment. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE */
 	
-	// shmget to obtain access to a shared memory segment
-	// IPC_CREAT to create a new memory segment
+	// shmget - to obtain access to a shared memory segment
+	// IPC_CREAT - to create a new memory segment
+	// 64 permissions (rw-r--r--)
 	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, 0644 | IPC_CREAT);
 	
 	// check success
-	if (key == -1) {
+	if (shmid == -1) {
 		perror("shmget: shmget failed");
 		exit(1);
 	}
@@ -61,6 +62,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 	// ====================================================================================================
 	/* TODO: Attach to the shared memory */
 	
+	// shmat - to attach to shared memory
 	// (void *)0 used so OS can choose address for us
 	// last arg is 0 since SHM_RDNONLY is for reading only, 0 otherwise
 	sharedMemPtr = shmat(shmid, (void *)0, 0);
@@ -68,39 +70,23 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 	//shmat returns -1 if it fails. Check for -1 failure w/ comparison to check for error
 	// check success
 	if (sharedMemPtr == (void *) -1) {
-		perror("shmget: shmget failed");
+		perror("shmat: shmat failed");
 		exit(1);
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
 	// ====================================================================================================
 	/* TODO: Attach to the message queue */
-	
-	// shmat to attach to shared memory
-	// in ex. char *str = (char*) shmat(shmid,(void*)0,0); 
-	sharedMemPtr = (char*) shmat(shmid, NULL, 0);
-	
-	//detach from shared memory
-	shmdt(sharedMemPtr);
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	// ====================================================================================================
 	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
+	
+	// msgget - returns the System V message queue identifier associated w/ value of the key argument
+	// 0666 - usual access permissions 
+	msqid = msgget(key, 0666 | IPC_CREAT);
+	
+	// check success
+	if (msqid == -1) {
+		perror("msgget: msgget failed");
+		exit(1);
+	}
 	
 }
 
@@ -114,6 +100,8 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr) {
 	// ====================================================================================================
 	/* TODO: Detach from shared memory */
+
+	shmdt(sharedMemPtr);
 }
 
 /**
@@ -143,7 +131,7 @@ void send(const char* fileName) {
  		 * fread will return how many bytes it has actually read (since the last chunk may be less
  		 * than SHARED_MEMORY_CHUNK_SIZE).
  		 */
-		if((sndMsg.size = fread(sharedMemPtr, sizeof(char), SHARED_MEMORY_CHUNK_SIZE, fp)) < 0) {
+		if ((sndMsg.size = fread(sharedMemPtr, sizeof(char), SHARED_MEMORY_CHUNK_SIZE, fp)) < 0) {
 			perror("fread");
 			exit(-1);
 		}
@@ -153,10 +141,26 @@ void send(const char* fileName) {
  		 * (message of type SENDER_DATA_TYPE) 
  		 */
 		
+		// mtype from msg.h
+		sndMsg.mtype = SENDER_DATA_TYPE;
+		
+		// msgsnd - to send message
+		// check success
+		if (msgsnd(msqid, &sndMsg, sizeof(sndMsg) - sizeof(long), 0) == -1) {
+			perror("msgsnd: msgsnd failed");
+		}
+		
 		// ====================================================================================================
 		/* TODO: Wait until the receiver sends us a message of type RECV_DONE_TYPE telling us 
  		 * that he finished saving the memory chunk. 
  		 */
+		 
+		 // msgrcv - to receive message
+		 // check success
+		 if (msgrcv(msqid, &sndMsg, 0, RECV_DONE_TYPE, 0)) {
+			 perror("msgrcv: msgrcv failed");
+			 exit(1);
+		 }
 	}
 	
 	// ====================================================================================================
@@ -164,6 +168,15 @@ void send(const char* fileName) {
  	  * Lets tell the receiver that we have nothing more to send. We will do this by
  	  * sending a message of type SENDER_DATA_TYPE with size field set to 0. 	
 	  */
+
+	// set size to 0
+	sndMsg.size = 0;
+	sndMsg.mtype = SENDER_DATA_TYPE;
+	
+	//check success (sending message)
+	if (msgsnd(msqid, &sndMsg, sizeof(sndMsg) - sizeof(long), 0) == -1) {
+		perror("msgsnd: msgsnd failed");
+	}
 
 		
 	/* Close the file */
