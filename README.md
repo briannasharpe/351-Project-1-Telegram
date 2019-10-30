@@ -1,12 +1,13 @@
 # 351-Project-1-Telegram
 
 #Write a README file(text file, do not submit a .doc file .o or executable code)
-– Your Section#, Name and Email Address.
-SEC-03
-Brianna Sharpe briannasharpe@csu.fullerton.edu
+– SEC-03
+– Brianna Sharpe briannasharpe@csu.fullerton.edu
+– 
+– 
+– 
 
-– The programming language you used (i.e. C or C++).
-C++
+– Used C++
 
 – How to execute your program.
 
