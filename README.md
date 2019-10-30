@@ -1,7 +1,4 @@
-# 351-Project-1-Telegram
-
-#Write a README file(text file, do not submit a .doc file .o or executable code)
-– SEC-03
+# 351-Project-1
 
 – Your Section#, Name and Email Address. 
 SEC-03 
