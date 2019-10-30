@@ -3,23 +3,23 @@
 #Write a README file(text file, do not submit a .doc file .o or executable code)
 – SEC-03
 
-– Your Section#, Name and Email Address.
-SEC-03
-Arely De Leon    arelydeleon97@csu.fullerton.edu
-Armon Rahimi     armon16@csu.fullerton.edu
-Brianna Sharpe   briannasharpe@csu.fullerton.edu
+– Your Section#, Name and Email Address. 
+SEC-03 
+Arely De Leon    arelydeleon97@csu.fullerton.edu 
+Armon Rahimi     armon16@csu.fullerton.edu 
+Brianna Sharpe   briannasharpe@csu.fullerton.edu 
 
 – The programming language you used
-C++
+C++ 
 
 – How to execute your program.
-./run.sh
+./run.sh 
 
 – Whether you implemented the extra credit.
-No
+No 
 
 – Anything special about your submission that we should take note of.
-No
+No 
 
 
 (delete)
