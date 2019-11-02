@@ -1,4 +1,3 @@
-
 #include <sys/shm.h>
 #include <sys/msg.h>
 #include <stdio.h>
@@ -36,6 +35,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 		   may have the same key.
 	 */
 	
+	printf("SENDER\n");
 	// ftok to generate unique key
 	key_t key = ftok("keyfile.txt", 'a');
 	
@@ -48,6 +48,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 	// ====================================================================================================
 	/* TODO: Get the id of the shared memory segment. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE */
 	
+	printf("getting id of shared memory segment\n");
 	// shmget - to obtain access to a shared memory segment
 	// IPC_CREAT - to create a new memory segment
 	// 64 permissions (rw-r--r--)
@@ -62,6 +63,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 	// ====================================================================================================
 	/* TODO: Attach to the shared memory */
 	
+	printf("attaching to shared memory\n");
 	// shmat - to attach to shared memory
 	// (void *)0 used so OS can choose address for us
 	// last arg is 0 since SHM_RDNONLY is for reading only, 0 otherwise
@@ -78,6 +80,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 	/* TODO: Attach to the message queue */
 	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
 	
+	printf("attaching to message queue\n");
 	// msgget - returns the System V message queue identifier associated w/ value of the key argument
 	// 0666 - usual access permissions 
 	msqid = msgget(key, 0666 | IPC_CREAT);
@@ -100,7 +103,8 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr) {
 	// ====================================================================================================
 	/* TODO: Detach from shared memory */
-
+	
+	printf("detaching from shared memory\n");
 	shmdt(sharedMemPtr);
 }
 
@@ -141,6 +145,7 @@ void send(const char* fileName) {
  		 * (message of type SENDER_DATA_TYPE) 
  		 */
 		
+		printf("sending message to receiver\n");
 		// mtype from msg.h
 		sndMsg.mtype = SENDER_DATA_TYPE;
 		
@@ -155,6 +160,7 @@ void send(const char* fileName) {
  		 * that he finished saving the memory chunk. 
  		 */
 		 
+		 printf("waiting for message from receiver\n");
 		 // msgrcv - to receive message
 		 // check success
 		 if (msgrcv(msqid, &sndMsg, 0, RECV_DONE_TYPE, 0)) {
@@ -168,7 +174,8 @@ void send(const char* fileName) {
  	  * Lets tell the receiver that we have nothing more to send. We will do this by
  	  * sending a message of type SENDER_DATA_TYPE with size field set to 0. 	
 	  */
-
+	
+	printf("finished sending file\n");
 	// set size to 0
 	sndMsg.size = 0;
 	sndMsg.mtype = SENDER_DATA_TYPE;
