@@ -5,8 +5,7 @@ Section: 03
   1. Armon Rahimi armon16@csu.fullerton.edu
   2. Arely De Leon arelydeleon97@csu.fullerton.edu
   3. Maria Diaz mardiaz353@csu.fullerton.edu
-  4. Brianna Sharpe
-
+  4.  Brianna Sharpe briannasharpe@csu.fullerton.edu
 Programming Language used:
  
  C++ and shell script
