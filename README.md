@@ -7,16 +7,19 @@ Section: 03
   3. Maria Diaz mardiaz353@csu.fullerton.edu
 
 Programming Language used:
-  C++
-  shell script
+ 
+ C++ and shell script
 
 -How to execute your program
+
   First, give executable permission to run.sh by typing:
   "chmod +x run.sh" into the terminal without quotes.
   The code will then run in its entirety.
 
 -Whether you implemented the extra credit
+
   No
 
 -Anything special about your submission that we should take note of
+
   No
