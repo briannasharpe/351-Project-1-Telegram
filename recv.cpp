@@ -153,10 +153,6 @@ void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 	msgctl(msqid, IPC_RMID, 0);
 }
 
-/**
- * Handles the exit signal
- * @param signal - the signal type
- */
 void ctrlCSignal(int mySignal)
 {
 	// Free system V resources
